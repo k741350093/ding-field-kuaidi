@@ -1,10 +1,10 @@
 import { FieldType, fieldDecoratorKit, FormItemComponent, FieldExecuteCode, AuthorizationType } from 'dingtalk-docs-cool-app';
 const { t } = fieldDecoratorKit;
 
-const ip = '32f4f538.r1.cpolar.top';
+const ip = 'bigbrain.work/kuaidi_api';
 
 // 通过addDomainList添加请求接口的域名
-fieldDecoratorKit.setDomainList([ip]);
+fieldDecoratorKit.setDomainList(['bigbrain.work']);
 
 fieldDecoratorKit.setDecorator({
   name: '物流查询助手',
