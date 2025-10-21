@@ -1,7 +1,7 @@
 import { FieldType, fieldDecoratorKit, FormItemComponent, FieldExecuteCode, AuthorizationType } from 'dingtalk-docs-cool-app';
 const { t } = fieldDecoratorKit;
 
-const ip = '13a54707.r1.cpolar.top';
+const ip = '32f4f538.r1.cpolar.top';
 
 // 通过addDomainList添加请求接口的域名
 fieldDecoratorKit.setDomainList([ip]);
@@ -22,6 +22,10 @@ fieldDecoratorKit.setDecorator({
       'trackingNumber': '追跡番号',
       'carrier': '宅配会社'
     },
+  },
+  errorMessages: {
+    // 定义错误信息集合
+    'error1': t('物流单号是空的')
   },
   // 定义捷径的入参
   formItems: [
@@ -117,7 +121,7 @@ fieldDecoratorKit.setDecorator({
       if (!trackingNumber) {
         return {
           code: FieldExecuteCode.Error,
-          message: '物流单号是空的'
+          errorMessage: 'error1'
         }
       }
 
@@ -136,7 +140,9 @@ fieldDecoratorKit.setDecorator({
       if (res.code !== 200) {
         return {
           code: FieldExecuteCode.Error,
-          message: res.message || '查询失败'
+          extra: {
+            traceId: res.traceId
+          }
         }
       }
 
