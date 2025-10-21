@@ -25,7 +25,8 @@ fieldDecoratorKit.setDecorator({
   },
   errorMessages: {
     // 定义错误信息集合
-    'error1': t('物流单号是空的')
+    'error1': t('物流单号是空的'),
+    'error2': t('查询物流信息失败')
   },
   // 定义捷径的入参
   formItems: [
@@ -140,6 +141,7 @@ fieldDecoratorKit.setDecorator({
       if (res.code !== 200) {
         return {
           code: FieldExecuteCode.Error,
+          errorMessage: 'error2',
           extra: {
             traceId: res.traceId
           }
@@ -166,7 +168,7 @@ fieldDecoratorKit.setDecorator({
       console.log('====error', String(e));
       return {
         code: FieldExecuteCode.Error,
-        message: '查询物流信息失败'
+        errorMessage: 'error2'
       }
     }
   },
