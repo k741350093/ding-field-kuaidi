@@ -19,31 +19,37 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 var t = _dingtalkDocsCoolApp.fieldDecoratorKit.t;
-var ip = 'bigbrain.work/kuaidi_api';
+var domain = '606b832e.r3.cpolar.cn';
 
 // 通过addDomainList添加请求接口的域名
-_dingtalkDocsCoolApp.fieldDecoratorKit.setDomainList(['bigbrain.work']);
+_dingtalkDocsCoolApp.fieldDecoratorKit.setDomainList([domain]);
 _dingtalkDocsCoolApp.fieldDecoratorKit.setDecorator({
   name: '物流查询助手',
   // 定义捷径的i18n语言资源
   i18nMap: {
     'zh-CN': {
-      'trackingNumber': '物流单号',
-      'carrier': '快递公司'
+      'number': '物流单号',
+      'company': '地区/快递公司'
     },
     'en-US': {
-      'trackingNumber': 'Tracking Number',
-      'carrier': 'Carrier'
+      'number': 'Tracking Number',
+      'company': 'company'
     },
     'ja-JP': {
-      'trackingNumber': '追跡番号',
-      'carrier': '宅配会社'
+      'number': '追跡番号',
+      'company': '宅配会社'
     }
+  },
+  errorMessages: {
+    // 定义错误信息集合
+    'error1': '物流单号是空的',
+    'error2': '查询物流信息失败',
+    'error3': '能量点可能不足'
   },
   // 定义捷径的入参
   formItems: [{
-    key: 'trackingNumber',
-    label: t('trackingNumber'),
+    key: 'number',
+    label: t('number'),
     component: _dingtalkDocsCoolApp.FormItemComponent.FieldSelect,
     props: {
       mode: 'single',
@@ -53,11 +59,11 @@ _dingtalkDocsCoolApp.fieldDecoratorKit.setDecorator({
       required: true
     }
   }, {
-    key: 'carrier',
-    label: t('carrier'),
+    key: 'company',
+    label: t('company'),
     component: _dingtalkDocsCoolApp.FormItemComponent.Textarea,
     props: {
-      placeholder: '请输入快递公司',
+      placeholder: '默认国内，可输入海外/快递公司',
       enableFieldReference: true
     },
     validator: {
@@ -85,7 +91,7 @@ _dingtalkDocsCoolApp.fieldDecoratorKit.setDecorator({
         type: _dingtalkDocsCoolApp.FieldType.Text,
         defaultSelected: true
       }, {
-        key: 'carrier',
+        key: 'company',
         title: '快递公司',
         type: _dingtalkDocsCoolApp.FieldType.Text,
         defaultSelected: true
@@ -122,31 +128,31 @@ _dingtalkDocsCoolApp.fieldDecoratorKit.setDecorator({
   // formItemParams 为运行时传入的字段参数，对应字段配置里的 formItems （如引用的依赖字段）
   execute: function () {
     var _execute = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(context, formData) {
-      var trackingNumber, carrier, res, trackDetails, trackDetailsText, _iterator, _step, item, _t;
+      var number, company, res, trackDetails, trackDetailsText, _iterator, _step, item, _t;
       return _regenerator().w(function (_context) {
         while (1) switch (_context.p = _context.n) {
           case 0:
-            trackingNumber = formData.trackingNumber, carrier = formData.carrier;
+            number = formData.number, company = formData.company;
             _context.p = 1;
-            if (trackingNumber) {
+            if (number) {
               _context.n = 2;
               break;
             }
             return _context.a(2, {
               code: _dingtalkDocsCoolApp.FieldExecuteCode.Error,
-              message: '物流单号是空的'
+              errorMessage: 'error1'
             });
           case 2:
             _context.n = 3;
-            return context.fetch("https://".concat(ip, "/logistics/track"), {
+            return context.fetch("https://".concat(domain, "/logistics/track"), {
               // 已经在addDomainList中添加为白名单的请求
               headers: {
                 'Content-Type': 'application/json'
               },
               method: 'POST',
               body: JSON.stringify({
-                number: trackingNumber,
-                carrier: carrier
+                number: number,
+                company: company ? company : '国内'
               })
             }, 'shiliu_ai').then(function (res) {
               return res.json();
@@ -154,14 +160,29 @@ _dingtalkDocsCoolApp.fieldDecoratorKit.setDecorator({
           case 3:
             res = _context.v;
             if (!(res.code !== 200)) {
+              _context.n = 5;
+              break;
+            }
+            if (!(res.code === 10001)) {
               _context.n = 4;
               break;
             }
             return _context.a(2, {
               code: _dingtalkDocsCoolApp.FieldExecuteCode.Error,
-              message: res.message || '查询失败'
+              errorMessage: 'error3',
+              extra: {
+                traceId: res.traceId
+              }
             });
           case 4:
+            return _context.a(2, {
+              code: _dingtalkDocsCoolApp.FieldExecuteCode.Error,
+              errorMessage: 'error2',
+              extra: {
+                traceId: res.traceId
+              }
+            });
+          case 5:
             trackDetails = res.data.trackDetails;
             trackDetailsText = '';
             _iterator = _createForOfIteratorHelper(trackDetails);
@@ -181,16 +202,16 @@ _dingtalkDocsCoolApp.fieldDecoratorKit.setDecorator({
                 trackDetails: trackDetailsText
               })
             });
-          case 5:
-            _context.p = 5;
+          case 6:
+            _context.p = 6;
             _t = _context.v;
             console.log('====error', String(_t));
             return _context.a(2, {
               code: _dingtalkDocsCoolApp.FieldExecuteCode.Error,
-              message: '查询物流信息失败'
+              errorMessage: 'error2'
             });
         }
-      }, _callee, null, [[1, 5]]);
+      }, _callee, null, [[1, 6]]);
     }));
     function execute(_x, _x2) {
       return _execute.apply(this, arguments);

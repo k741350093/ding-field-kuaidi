@@ -1,38 +1,39 @@
 import { FieldType, fieldDecoratorKit, FormItemComponent, FieldExecuteCode, AuthorizationType } from 'dingtalk-docs-cool-app';
 const { t } = fieldDecoratorKit;
 
-const ip = 'bigbrain.work/kuaidi_api';
+const domain = '606b832e.r3.cpolar.cn';
 
 // 通过addDomainList添加请求接口的域名
-fieldDecoratorKit.setDomainList(['bigbrain.work']);
+fieldDecoratorKit.setDomainList([domain]);
 
 fieldDecoratorKit.setDecorator({
   name: '物流查询助手',
   // 定义捷径的i18n语言资源
   i18nMap: {
     'zh-CN': {
-      'trackingNumber': '物流单号',
-      'carrier': '快递公司'
+      'number': '物流单号',
+      'company': '地区/快递公司'
     },
     'en-US': {
-      'trackingNumber': 'Tracking Number',
-      'carrier': 'Carrier'
+      'number': 'Tracking Number',
+      'company': 'company'
     },
     'ja-JP': {
-      'trackingNumber': '追跡番号',
-      'carrier': '宅配会社'
+      'number': '追跡番号',
+      'company': '宅配会社'
     },
   },
   errorMessages: {
     // 定义错误信息集合
-    'error1': t('物流单号是空的'),
-    'error2': t('查询物流信息失败')
+    'error1': '物流单号是空的',
+    'error2': '查询物流信息失败',
+    'error3': '能量点可能不足'
   },
   // 定义捷径的入参
   formItems: [
     {
-      key: 'trackingNumber',
-      label: t('trackingNumber'),
+      key: 'number',
+      label: t('number'),
       component: FormItemComponent.FieldSelect,
       props: {
         mode: 'single',
@@ -43,11 +44,11 @@ fieldDecoratorKit.setDecorator({
       }
     },
     {
-      key: 'carrier',
-      label: t('carrier'),
+      key: 'company',
+      label: t('company'),
       component: FormItemComponent.Textarea,
       props: {
-        placeholder: '请输入快递公司',
+        placeholder: '默认国内，可输入海外/快递公司',
         enableFieldReference: true,
       },
       validator: {
@@ -80,7 +81,7 @@ fieldDecoratorKit.setDecorator({
           defaultSelected: true
         },
         {
-          key: 'carrier',
+          key: 'company',
           title: '快递公司',
           type: FieldType.Text,
           defaultSelected: true
@@ -116,10 +117,10 @@ fieldDecoratorKit.setDecorator({
   },
   // formItemParams 为运行时传入的字段参数，对应字段配置里的 formItems （如引用的依赖字段）
   execute: async (context, formData) => {
-    const { trackingNumber, carrier } = formData;
+    const { number, company } = formData;
     try {
 
-      if (!trackingNumber) {
+      if (!number) {
         return {
           code: FieldExecuteCode.Error,
           errorMessage: 'error1'
@@ -127,18 +128,29 @@ fieldDecoratorKit.setDecorator({
       }
 
       // 物流查询请求
-      const res: any = await context.fetch(`https://${ip}/logistics/track`, { // 已经在addDomainList中添加为白名单的请求
+      const res: any = await context.fetch(`https://${domain}/logistics/track`, { // 已经在addDomainList中添加为白名单的请求
         headers: {
           'Content-Type': 'application/json'
         },
         method: 'POST',
         body: JSON.stringify({
-          number: trackingNumber,
-          carrier: carrier
+          number: number,
+          company: company ? company : '国内'
         })
       }, 'shiliu_ai').then(res => res.json());
 
       if (res.code !== 200) {
+
+        if (res.code === 10001) {
+          return {
+            code: FieldExecuteCode.Error,
+            errorMessage: 'error3',
+            extra: {
+              traceId: res.traceId
+            }
+          }
+        }
+
         return {
           code: FieldExecuteCode.Error,
           errorMessage: 'error2',
