@@ -1,7 +1,7 @@
 import { FieldType, fieldDecoratorKit, FormItemComponent, FieldExecuteCode, AuthorizationType } from 'dingtalk-docs-cool-app';
 const { t } = fieldDecoratorKit;
 
-const domain = '606b832e.r3.cpolar.cn';
+const domain = '52b984d0.r1.cpolar.top';
 
 // 通过addDomainList添加请求接口的域名
 fieldDecoratorKit.setDomainList([domain]);
@@ -135,7 +135,8 @@ fieldDecoratorKit.setDecorator({
         method: 'POST',
         body: JSON.stringify({
           number: number,
-          company: company ? company : '国内'
+          company: company ? company : '国内',
+          platform: 'dingding'
         })
       }, 'shiliu_ai').then(res => res.json());
 
