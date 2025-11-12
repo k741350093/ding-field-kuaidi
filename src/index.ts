@@ -23,12 +23,6 @@ fieldDecoratorKit.setDecorator({
       'company': '宅配会社'
     },
   },
-  errorMessages: {
-    // 定义错误信息集合
-    'error1': '物流单号是空的',
-    'error2': '查询物流信息失败',
-    'error3': '能量点可能不足'
-  },
   // 定义捷径的入参
   formItems: [
     {
@@ -115,6 +109,12 @@ fieldDecoratorKit.setDecorator({
     },
     tooltips: '石榴AI API Key'
   },
+  errorMessages: {
+    // 定义错误信息集合
+    'error1': '物流单号不能为空',
+    'error2': '服务器错误，请联系开发者',
+    'error3': '能量点可能不足'
+  },
   // formItemParams 为运行时传入的字段参数，对应字段配置里的 formItems （如引用的依赖字段）
   execute: async (context, formData) => {
     const { number, company } = formData;
@@ -143,6 +143,15 @@ fieldDecoratorKit.setDecorator({
       if (res.code !== 200) {
 
         if (res.code === 10001) {
+          return {
+            code: FieldExecuteCode.Success,
+            data: {
+              latestStatus: '暂无物流信息',
+            }
+          }
+        }
+
+        if (res.code === 10002) {
           return {
             code: FieldExecuteCode.Error,
             errorMessage: 'error3',
