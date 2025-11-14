@@ -113,7 +113,7 @@ fieldDecoratorKit.setDecorator({
     // 定义错误信息集合
     'error1': '物流单号不能为空',
     'error2': '服务器错误，请联系开发者',
-    'error3': '能量点可能不足'
+    'point_not_enough': '可用能量点不足'
   },
   // formItemParams 为运行时传入的字段参数，对应字段配置里的 formItems （如引用的依赖字段）
   execute: async (context, formData) => {
@@ -142,19 +142,19 @@ fieldDecoratorKit.setDecorator({
 
       if (res.code !== 200) {
 
-        if (res.code === 10001) {
+        if (res.code === 1003) {
           return {
             code: FieldExecuteCode.Success,
             data: {
-              latestStatus: '暂无物流信息',
+              latestStatus: '暂无物流信息或单号错误',
             }
           }
         }
 
-        if (res.code === 10002) {
+        if (res.code === 10011) {
           return {
             code: FieldExecuteCode.Error,
-            errorMessage: 'error3',
+            errorMessage: 'point_not_enough',
             extra: {
               traceId: res.traceId
             }
