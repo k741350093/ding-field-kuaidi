@@ -1,10 +1,10 @@
 import { FieldType, fieldDecoratorKit, FormItemComponent, FieldExecuteCode, AuthorizationType } from 'dingtalk-docs-cool-app';
 const { t } = fieldDecoratorKit;
 
-const domain = '52b984d0.r1.cpolar.top';
+const domain = 'bigbrain.work/kuaidi_api';
 
 // 通过addDomainList添加请求接口的域名
-fieldDecoratorKit.setDomainList([domain]);
+fieldDecoratorKit.setDomainList(['bigbrain.work']);
 
 fieldDecoratorKit.setDecorator({
   name: '物流查询助手',
