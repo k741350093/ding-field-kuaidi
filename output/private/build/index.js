@@ -19,10 +19,10 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 var t = _dingtalkDocsCoolApp.fieldDecoratorKit.t;
-var domain = '52b984d0.r1.cpolar.top';
+var domain = 'bigbrain.work/kuaidi_api';
 
 // 通过addDomainList添加请求接口的域名
-_dingtalkDocsCoolApp.fieldDecoratorKit.setDomainList([domain]);
+_dingtalkDocsCoolApp.fieldDecoratorKit.setDomainList(['bigbrain.work']);
 _dingtalkDocsCoolApp.fieldDecoratorKit.setDecorator({
   name: '物流查询助手',
   // 定义捷径的i18n语言资源
@@ -39,12 +39,6 @@ _dingtalkDocsCoolApp.fieldDecoratorKit.setDecorator({
       'number': '追跡番号',
       'company': '宅配会社'
     }
-  },
-  errorMessages: {
-    // 定义错误信息集合
-    'error1': '物流单号是空的',
-    'error2': '查询物流信息失败',
-    'error3': '能量点可能不足'
   },
   // 定义捷径的入参
   formItems: [{
@@ -125,6 +119,12 @@ _dingtalkDocsCoolApp.fieldDecoratorKit.setDecorator({
     },
     tooltips: '石榴AI API Key'
   },
+  errorMessages: {
+    // 定义错误信息集合
+    'error1': '物流单号不能为空',
+    'error2': '服务器错误，请联系开发者',
+    'error3': '能量点可能不足'
+  },
   // formItemParams 为运行时传入的字段参数，对应字段配置里的 formItems （如引用的依赖字段）
   execute: function () {
     var _execute = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(context, formData) {
@@ -161,11 +161,22 @@ _dingtalkDocsCoolApp.fieldDecoratorKit.setDecorator({
           case 3:
             res = _context.v;
             if (!(res.code !== 200)) {
-              _context.n = 5;
+              _context.n = 6;
               break;
             }
             if (!(res.code === 10001)) {
               _context.n = 4;
+              break;
+            }
+            return _context.a(2, {
+              code: _dingtalkDocsCoolApp.FieldExecuteCode.Success,
+              data: {
+                latestStatus: '暂无物流信息'
+              }
+            });
+          case 4:
+            if (!(res.code === 10002)) {
+              _context.n = 5;
               break;
             }
             return _context.a(2, {
@@ -175,7 +186,7 @@ _dingtalkDocsCoolApp.fieldDecoratorKit.setDecorator({
                 traceId: res.traceId
               }
             });
-          case 4:
+          case 5:
             return _context.a(2, {
               code: _dingtalkDocsCoolApp.FieldExecuteCode.Error,
               errorMessage: 'error2',
@@ -183,7 +194,7 @@ _dingtalkDocsCoolApp.fieldDecoratorKit.setDecorator({
                 traceId: res.traceId
               }
             });
-          case 5:
+          case 6:
             trackDetails = res.data.trackDetails;
             trackDetailsText = '';
             _iterator = _createForOfIteratorHelper(trackDetails);
@@ -203,8 +214,8 @@ _dingtalkDocsCoolApp.fieldDecoratorKit.setDecorator({
                 trackDetails: trackDetailsText
               })
             });
-          case 6:
-            _context.p = 6;
+          case 7:
+            _context.p = 7;
             _t = _context.v;
             console.log('====error', String(_t));
             return _context.a(2, {
@@ -212,7 +223,7 @@ _dingtalkDocsCoolApp.fieldDecoratorKit.setDecorator({
               errorMessage: 'error2'
             });
         }
-      }, _callee, null, [[1, 6]]);
+      }, _callee, null, [[1, 7]]);
     }));
     function execute(_x, _x2) {
       return _execute.apply(this, arguments);
