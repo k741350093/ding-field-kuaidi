@@ -1,10 +1,18 @@
 import { FieldType, fieldDecoratorKit, FormItemComponent, FieldExecuteCode, AuthorizationType } from 'dingtalk-docs-cool-app';
 const { t } = fieldDecoratorKit;
 
-const domain = '4460dffd.r1.cpolar.top';
+let env = 'prod'
+let domainList = ['api.bigbrain.work']
+let baseUrl = 'api.bigbrain.work/kuaidi'
+
+if (env === 'dev') {
+  const devDomain = '4460dffd.r1.cpolar.top';
+  baseUrl = devDomain;
+  domainList.push(devDomain);
+}
 
 // 通过addDomainList添加请求接口的域名
-fieldDecoratorKit.setDomainList(['bigbrain.work', domain]);
+fieldDecoratorKit.setDomainList(domainList);
 
 fieldDecoratorKit.setDecorator({
   name: '物流查询助手',
@@ -146,7 +154,7 @@ fieldDecoratorKit.setDecorator({
       }
 
       // 物流查询请求
-      const res: any = await context.fetch(`https://${domain}/logistics/track`, { // 已经在addDomainList中添加为白名单的请求
+      const res: any = await context.fetch(`https://${baseUrl}/logistics/track`, { // 已经在addDomainList中添加为白名单的请求
         headers: {
           'Content-Type': 'application/json'
         },
