@@ -1,10 +1,18 @@
 import { FieldType, fieldDecoratorKit, FormItemComponent, FieldExecuteCode, AuthorizationType } from 'dingtalk-docs-cool-app';
 const { t } = fieldDecoratorKit;
 
-const domain = 'bigbrain.work/kuaidi_api';
+let env = 'prod'
+let domainList = ['api.bigbrain.work']
+let baseUrl = 'api.bigbrain.work/kuaidi'
+
+if (env === 'dev') {
+  const devDomain = '4460dffd.r1.cpolar.top';
+  baseUrl = devDomain;
+  domainList.push(devDomain);
+}
 
 // 通过addDomainList添加请求接口的域名
-fieldDecoratorKit.setDomainList(['bigbrain.work']);
+fieldDecoratorKit.setDomainList(domainList);
 
 fieldDecoratorKit.setDecorator({
   name: '物流查询助手',
@@ -12,15 +20,18 @@ fieldDecoratorKit.setDecorator({
   i18nMap: {
     'zh-CN': {
       'number': '物流单号',
-      'company': '地区/快递公司'
+      'company': '地区/快递公司',
+      'phone': '手机号'
     },
     'en-US': {
       'number': 'Tracking Number',
-      'company': 'company'
+      'company': 'company',
+      'phone': 'phone'
     },
     'ja-JP': {
       'number': '追跡番号',
-      'company': '宅配会社'
+      'company': '宅配会社',
+      'phone': '電話番号'
     },
   },
   // 定义捷径的入参
@@ -44,6 +55,20 @@ fieldDecoratorKit.setDecorator({
       props: {
         placeholder: '默认国内，可输入海外/快递公司',
         enableFieldReference: true,
+      },
+      validator: {
+        required: false,
+      }
+    },
+    {
+      key: 'phone',
+      label: t('phone'),
+      tooltips: {
+        title: '顺丰、中通必填'
+      },
+      component: FormItemComponent.Textarea,
+      props: {
+        placeholder: '请输入手机号'
       },
       validator: {
         required: false,
@@ -113,11 +138,12 @@ fieldDecoratorKit.setDecorator({
     // 定义错误信息集合
     'error1': '物流单号不能为空',
     'error2': '服务器错误，请联系开发者',
-    'point_not_enough': '可用能量点不足'
+    'point_not_enough': '可用能量点不足',
+    'phone_error': '手机号有误'
   },
   // formItemParams 为运行时传入的字段参数，对应字段配置里的 formItems （如引用的依赖字段）
   execute: async (context, formData) => {
-    const { number, company } = formData;
+    const { number, company, phone } = formData;
     try {
 
       if (!number) {
@@ -128,7 +154,7 @@ fieldDecoratorKit.setDecorator({
       }
 
       // 物流查询请求
-      const res: any = await context.fetch(`https://${domain}/logistics/track`, { // 已经在addDomainList中添加为白名单的请求
+      const res: any = await context.fetch(`https://${baseUrl}/logistics/track`, { // 已经在addDomainList中添加为白名单的请求
         headers: {
           'Content-Type': 'application/json'
         },
@@ -136,6 +162,7 @@ fieldDecoratorKit.setDecorator({
         body: JSON.stringify({
           number: number,
           company: company ? company : '国内',
+          phone: phone,
           platform: 'dingding'
         })
       }, 'shiliu_ai').then(res => res.json());
@@ -155,6 +182,16 @@ fieldDecoratorKit.setDecorator({
           return {
             code: FieldExecuteCode.Error,
             errorMessage: 'point_not_enough',
+            extra: {
+              traceId: res.traceId
+            }
+          }
+        }
+
+        if (res.code === 20001) {
+          return {
+            code: FieldExecuteCode.Error,
+            errorMessage: 'phone_error',
             extra: {
               traceId: res.traceId
             }
