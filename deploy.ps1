@@ -88,7 +88,7 @@ if ($LASTEXITCODE -ne 0) {
 
 # 8. Push to release repo
 Write-Host "`nPushing to release repo (github)..." -ForegroundColor Cyan
-git push github main
+git push -f github main
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "ERROR: Push failed! Rolling back..." -ForegroundColor Red
