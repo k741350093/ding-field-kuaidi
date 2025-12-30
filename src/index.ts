@@ -1,18 +1,11 @@
 import { FieldType, fieldDecoratorKit, FormItemComponent, FieldExecuteCode, AuthorizationType } from 'dingtalk-docs-cool-app';
 const { t } = fieldDecoratorKit;
 
-let env = 'prod'
-let domainList = ['api.bigbrain.work']
-let baseUrl = 'api.bigbrain.work/kuaidi'
-
-if (env === 'dev') {
-  const devDomain = '4460dffd.r1.cpolar.top';
-  baseUrl = devDomain;
-  domainList.push(devDomain);
-}
+const domain = 'api.bigbrain.work'
+// const domain = '6eb87d35.r1.cpolar.top'
 
 // 通过addDomainList添加请求接口的域名
-fieldDecoratorKit.setDomainList(domainList);
+fieldDecoratorKit.setDomainList([domain]);
 
 fieldDecoratorKit.setDecorator({
   name: '物流查询助手',
@@ -66,9 +59,10 @@ fieldDecoratorKit.setDecorator({
       tooltips: {
         title: '顺丰、中通必填'
       },
-      component: FormItemComponent.Textarea,
+      component: FormItemComponent.FieldSelect,
       props: {
-        placeholder: '请输入手机号'
+        mode: 'single',
+        supportTypes: [FieldType.Text]
       },
       validator: {
         required: false,
@@ -154,7 +148,7 @@ fieldDecoratorKit.setDecorator({
       }
 
       // 物流查询请求
-      const res: any = await context.fetch(`https://${baseUrl}/logistics/track`, { // 已经在addDomainList中添加为白名单的请求
+      const res: any = await context.fetch(`https://${domain}/kuaidi/logistics/track`, { // 已经在addDomainList中添加为白名单的请求
         headers: {
           'Content-Type': 'application/json'
         },
