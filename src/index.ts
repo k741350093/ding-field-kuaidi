@@ -2,7 +2,7 @@ import { FieldType, fieldDecoratorKit, FormItemComponent, FieldExecuteCode, Auth
 const { t } = fieldDecoratorKit;
 
 const domain = 'api.bigbrain.work'
-// const domain = '6eb87d35.r1.cpolar.top'
+// const domain = '11ef6478.r1.cpolar.top'
 
 // 通过addDomainList添加请求接口的域名
 fieldDecoratorKit.setDomainList([domain]);
@@ -133,7 +133,8 @@ fieldDecoratorKit.setDecorator({
     'error1': '物流单号不能为空',
     'error2': '服务器错误，请联系开发者',
     'point_not_enough': '可用能量点不足',
-    'phone_error': '手机号有误'
+    'phone_error': '手机号有误',
+    'not_found_company': '未匹配到快递公司'
   },
   // formItemParams 为运行时传入的字段参数，对应字段配置里的 formItems （如引用的依赖字段）
   execute: async (context, formData) => {
@@ -176,6 +177,16 @@ fieldDecoratorKit.setDecorator({
           return {
             code: FieldExecuteCode.Error,
             errorMessage: 'point_not_enough',
+            extra: {
+              traceId: res.traceId
+            }
+          }
+        }
+
+        if (res.code === 10021) {
+          return {
+            code: FieldExecuteCode.Error,
+            errorMessage: 'not_found_company',
             extra: {
               traceId: res.traceId
             }
